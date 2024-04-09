@@ -1,0 +1,1 @@
+docker run --rm --name stratt -p "80:80" -v ./:/usr/share/nginx/html:ro -d nginx

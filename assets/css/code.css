@@ -1,0 +1,47 @@
+div.code {
+    margin-top: 15px;
+}
+
+div.code > span.up,
+div.code > span.down,
+div.code > span.left,
+div.code > span.right {
+    width: 25px;
+    height: 25px;
+    background-image: url('../images/up.webp');
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+div.code > span {
+    filter: brightness(0) saturate(100%) invert(66%) sepia(0%) saturate(0%) hue-rotate(283deg) brightness(95%) contrast(92%);
+}
+
+div.code > span.success {
+    filter: none;
+}
+
+div.code > span.fail {
+    filter: brightness(0) saturate(100%) invert(9%) sepia(82%) saturate(6024%) hue-rotate(0deg) brightness(95%) contrast(112%);
+}
+
+div.code > span.left {
+    transform: rotate(-90deg);
+}
+
+div.code > span.down {
+    transform: rotate(180deg);
+}
+
+div.code > span.right {
+    transform: rotate(90deg);
+}
+
+div.code > span.succss {
+    color: green;
+}
+
+div.code > span.fail {
+    color: red;
+}

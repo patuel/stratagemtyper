@@ -1,0 +1,248 @@
+div.stratagem {
+    width: 40px;
+    height: 40px;
+    background-image: url('../images/stratagems.png');
+}
+
+/* Mission */
+div.stratagem.ResupplyIcon {
+    background-position: 0 0;
+}
+
+div.stratagem.SOSicon {
+    background-position: -40px 0;
+}
+
+div.stratagem.Reinforceicon {
+    background-position: -80px 0;
+}
+
+div.stratagem.Hellbomb_Icon {
+    background-position: -120px 0;
+}
+
+div.stratagem.DeliverSSSDicon {
+    background-position: -160px 0;
+}
+
+div.stratagem.HD2_Eagle_Rearm_Icon {
+    background-position: -240px 0;
+}
+
+div.stratagem.Seismic_probe_icon {
+    background-position: -280px 0;
+}
+
+div.stratagem.HD2_SEAF_Artillery {
+    background-position: -320px 0;
+}
+
+div.stratagem.HD2_Super_Earth_Flag {
+    background-position: -360px 0;
+}
+
+/* Defensive */
+div.stratagem.Teslaicon {
+    background-position: 0 -40px;
+}
+
+div.stratagem.Mortarsentryicon {
+    background-position: -40px -40px;
+}
+
+div.stratagem.EMSmortaricon {
+    background-position: -80px -40px;
+}
+
+div.stratagem.MGsentryicon {
+    background-position: -120px -40px;
+}
+
+div.stratagem.Gatlingsentryicon {
+    background-position: -160px -40px;
+}
+
+div.stratagem.Minefieldicon {
+    background-position: -200px -40px;
+}
+
+div.stratagem.Fireminefieldicon {
+    background-position: -240px -40px;
+}
+
+div.stratagem.Shieldrelayicon {
+    background-position: -280px -40px;
+}
+
+div.stratagem.HMGTurreticon {
+    background-position: -320px -40px;
+}
+
+div.stratagem.Autocannoasentryicon {
+    background-position: -360px -40px;
+}
+
+div.stratagem.Missilesentryicon {
+    background-position: -400px -40px;
+}
+
+/* Backpacks */
+div.stratagem.AX-LAS-5icon {
+    background-position: 0 -80px;
+}
+
+div.stratagem.AX-AR-23icon {
+    background-position: -40px -80px;
+}
+
+div.stratagem.LIFT-850icon {
+    background-position: -80px -80px;
+}
+
+div.stratagem.B-1icon {
+    background-position: -120px -80px;
+}
+
+div.stratagem.SH-32icon {
+    background-position: -160px -80px;
+}
+
+div.stratagem.SH-20icon {
+    background-position: -200px -80px;
+}
+
+/* Weapons */
+div.stratagem.AC-8icon {
+    background-position: 0 -120px;
+}
+
+div.stratagem.EAT-17icon {
+    background-position: -40px -120px;
+}
+
+div.stratagem.FLAM-40icon {
+    background-position: -80px -120px;
+}
+
+div.stratagem.LAS-98icon {
+    background-position: -120px -120px;
+}
+
+div.stratagem.M-105icon {
+    background-position: -160px -120px;
+}
+
+div.stratagem.MG-43icon {
+    background-position: -200px -120px;
+}
+
+div.stratagem.ARC-3icon {
+    background-position: -240px -120px;
+}
+
+div.stratagem.GL-21icon {
+    background-position: -280px -120px;
+}
+
+div.stratagem.APW-1icon {
+    background-position: -320px -120px;
+}
+
+div.stratagem.RS-422icon {
+    background-position: -360px -120px;
+}
+
+div.stratagem.GR-8icon {
+    background-position: -400px -120px;
+}
+
+div.stratagem.FAF-14icon {
+    background-position: -440px -120px;
+}
+
+div.stratagem.LAS99Icon {
+    background-position: -480px -120px;
+}
+
+div.stratagem.MG206Icon {
+    background-position: -520px -120px;
+}
+
+/* Orbital */
+div.stratagem.OrbitalPrecisionicon {
+    background-position: 0 -160px;
+}
+
+div.stratagem.OrbitalAirbursticon {
+    background-position: -40px -160px;
+}
+
+div.stratagem.Orbital120icon {
+    background-position: -80px -160px;
+}
+
+div.stratagem.Orbital380icon {
+    background-position: -120px -160px;
+}
+
+div.stratagem.OrbitalWalkingicon {
+    background-position: -160px -160px;
+}
+
+div.stratagem.OrbitalLasericon {
+    background-position: -200px -160px;
+}
+
+div.stratagem.OrbitalRailcannonicon {
+    background-position: -240px -160px;
+}
+
+div.stratagem.OrbitalGatlingicon {
+    background-position: -280px -160px;
+}
+
+div.stratagem.OrbitalGasicon {
+    background-position: -320px -160px;
+}
+
+div.stratagem.OrbitalEMSicon {
+    background-position: -360px -160px;
+}
+
+div.stratagem.OrbitalSmokeicon {
+    background-position: -400px -160px;
+}
+
+/* Eagle */
+div.stratagem.EagleStrafingicon {
+    background-position: 0 -200px;
+}
+
+div.stratagem.EagleAirstrikeicon {
+    background-position: -40px -200px;
+}
+
+div.stratagem.EagleClusterbombicon {
+    background-position: -80px -200px;
+}
+
+div.stratagem.EagleNapalmicon {
+    background-position: -120px -200px;
+}
+
+div.stratagem.EagleSmokeicon {
+    background-position: -160px -200px;
+}
+
+div.stratagem.EagleRocketpodicon {
+    background-position: -200px -200px;
+}
+
+div.stratagem.Eagle500icon {
+    background-position: -240px -200px;
+}
+
+/* Vehicles */
+div.stratagem.EXO45icon {
+    background-position: 0 -240px;
+}

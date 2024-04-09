@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="assets/css/stratagems.css" />
+    <link rel="stylesheet" href="assets/css/code.css" />
+
+    <script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript" src="typer.js"></script>
+
+    <script type="text/javascript" src="main.js" defer></script>
+    <style>
+        body {
+            background-color: #323437;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            color: #646669;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-content: center;
+            text-align: center;
+        }
+
+        .content > div.stratagem {
+            margin: 0 auto;
+        }
+
+        div.config {
+            margin-top: 1em;
+        }
+
+        .menu {
+            display: inline-block;
+            margin-top: 1em;
+            padding: 6px 8px;
+            background: #2c2e31;
+            border-radius: 0.3em;
+        }
+
+        .menu > a:not(:last-of-type):after {
+            content: ".";
+            overflow: hidden;
+            width: 2px;
+            margin-left: 1em;
+            top: 4px;
+            position: relative;
+            display: inline-block;
+            background: #646669;
+            border-radius: 1px;
+        }
+
+        .menu > a {
+            color: #646669;
+            display: inline-block;
+            text-decoration: none;
+            padding: 0 0.5em;
+        }
+
+        .menu > a:hover {
+            color: #e2b714;
+        }
+
+        div.overlay {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+        }
+
+        div.overlay > div {
+            margin: 2em;
+            padding: 1em;
+            background: #2c2e31;
+            border-radius: 1em;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        div.overlay > div > h2 {
+            font-size: .8em;
+            margin-right: 1em;
+        }
+
+        div.overlay > div > div > div.stratagem {
+            display: inline-block;
+            cursor: pointer;
+            margin-right: 5px;
+            border: 3px solid black;
+        }
+
+        div.overlay > div > div > div.stratagem.active,
+        div.overlay > div > div > div.stratagem:hover {
+            border-color: #e2b714;
+        }
+
+        div.overlay > div > div > div.stratagem.active {
+            border-style: outset;
+            /* box-shadow: 0 0 15px -2px #e2b714; */
+        }
+        div.overlay > div > div > div.stratagem.active:hover {
+            border-style: outset;
+        }
+        div.overlay > div > div > div.stratagem:not(.active):hover {
+            border-style: inset;
+        }
+
+        div.overlay a,
+        div.overlay a:visited {
+            color: #646669;
+            text-decoration: none;
+        }
+
+        div.overlay a:hover {
+            color: #e2b714;
+        }
+
+        .selector {
+            margin-bottom: 1em;
+        }
+
+        .selector > button {
+            display: inline-block;
+            margin-right: 1em;
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>
