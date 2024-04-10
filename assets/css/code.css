@@ -14,6 +14,11 @@ div.code > span.right {
     background-repeat: no-repeat;
 }
 
+div.code > span.partial:not(.fail) {
+    background-image: none;
+    background-color: #d6d7d6;
+}
+
 div.code > span {
     filter: brightness(0) saturate(100%) invert(66%) sepia(0%) saturate(0%) hue-rotate(283deg) brightness(95%) contrast(92%);
 }

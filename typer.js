@@ -44,11 +44,26 @@ class Typer {
     activeCodeCharIndex = 0;
     hasStarted = false;
     resetProgress = false;
+    
+    stats = {};
+    hasStarted = false;
+    hasError = false;
+    advanceTime;
+    startTime;
+    waitTime;
 
     constructor(pool) {
         this.pool = pool;
 
-        document.addEventListener("keydown", this.handleKeyDown.bind(this));
+        document.addEventListener("keydown",
+            this.handleKeyDown.bind(this));
+        
+        document.addEventListener("touchstart",
+            this.handleTouchStart.bind(this));
+        document.addEventListener("touchend",
+            this.handleTouchEnd.bind(this));
+        document.addEventListener("touchmove",
+            this.handleTouchMove.bind(this));
     }
 
     advance() {
@@ -60,6 +75,10 @@ class Typer {
 
         this.onAdvance(stratagem);
 
+        this.advanceTime = Date.now()
+        this.hasStarted = false;
+        this.hasError = false;
+
         return stratagem;
     }
 
@@ -67,6 +86,78 @@ class Typer {
     onSuccess = (index) => {}
     onFail = (index) => {}
     onReset = () => {}
+
+    reset() {
+        this.onReset();
+        this.activeCodeCharIndex = 0;
+    }
+
+    lastX = 0;
+    lastY = 0;
+    wantTouchReset = false;
+
+    handleTouchEnd(ev) {
+        this.wantTouchReset = false;
+        return false;
+    }
+
+    handleTouchStart(ev) {
+        const touch = ev.touches[0];
+        this.lastX = touch.pageX;
+        this.lastY = touch.pageY;
+        return false;
+    }
+
+    handleTouchMove(ev) {
+        if (this.wantTouchReset) {
+            return false;
+        }
+
+        const touch = ev.touches[0];
+
+        const diffX = touch.pageX - this.lastX;
+        const diffY = touch.pageY - this.lastY;
+
+        // console.log(diffX, diffY);
+
+        let code = undefined;
+        if (diffX == 0) {
+            if (diffY > 0) {
+                code = "S";
+            } else if (diffY < 0) {
+                code = "W";
+            }
+        } else if (diffY == 0) {
+            if (diffX > 0) {
+                code = "D";
+            } else if (diffX < 0) {
+                code = "A";
+            }
+        }
+        this.lastX = touch.pageX;
+        this.lastY = touch.pageY;
+
+        // console.log(code);
+        if (code == undefined) {
+            return false;
+        }
+
+        if (code == this.activeCode[this.activeCodeCharIndex]) {
+            this.onSuccess(this.activeCodeCharIndex);
+
+            this.activeCodeCharIndex++;
+
+            if (this.activeCodeCharIndex == this.activeCode.length) {
+                this.advance();
+                this.wantTouchReset = true;
+            }
+        } else {
+            this.onFail(this.activeCodeCharIndex);
+            this.hasError = true;
+        }
+
+        return false;
+    }
 
     handleKeyDown(ev) {
         let code = ev.key.toUpperCase();
@@ -76,7 +167,16 @@ class Typer {
 
         if (this.resetProgress) {
             this.resetProgress = false;
-            this.onReset();
+            this.reset();
+        }
+
+        if (!this.hasStarted) {
+            const now = Date.now();
+            this.waitTime = now - this.advanceTime;
+            this.startTime = now;    
+            console.log("Thinking time", this.waitTime, "ms");
+
+            this.hasStarted = true;
         }
 
         if (code == this.activeCode[this.activeCodeCharIndex]) {
@@ -85,13 +185,15 @@ class Typer {
             this.activeCodeCharIndex++;
 
             if (this.activeCodeCharIndex == this.activeCode.length) {
-                const stratagem = this.advance();
+                const time = Date.now() - this.startTime;
+                console.log("Time for", this.activeStratagem.name, time, "ms");
+                this.advance();
             }
         } else {
             this.onFail(this.activeCodeCharIndex);
+            this.hasError = true;
 
             if (settings.restartOnFail) {
-                this.activeCodeCharIndex = 0;
                 this.resetProgress = true;
             }
         }
@@ -131,18 +233,28 @@ const iconNameMap = {
 function getCodeIconElem(c) {
     var elem = document.createElement("span");
     elem.classList.add(iconNameMap[c]);
+
+    if (settings.codeVisibility == "partial") {
+        elem.classList.add("partial");
+    }
     return elem;
 }
 
 function getCodeCharElem(c) {
     let elem = document.createElement("span");
     elem.innerHTML = c;
+
+    if (settings.codeVisibility == "partial") {
+        elem.classList.add("partial");
+    }
     return elem;
 }
 
-typer.onAdvance = (stratagem) => {
+function rebuildTyper(stratagem) {
     title.innerHTML = stratagem.name;
+
     icon.className = "stratagem " + stratagem.icon;
+    icon.style.display = settings.iconVisible ? "" : "none";
 
     const code = stratagem.code;
 
@@ -151,11 +263,15 @@ typer.onAdvance = (stratagem) => {
         codeGenFn = getCodeCharElem;
     }
 
+    codeDiv.style.display = settings.codeVisibility == "hidden" ? "none" : "";
+
     codeDiv.innerHTML = ""; // clear
     for (let c of code) {
         codeDiv.appendChild(codeGenFn(c));
     }
 }
+
+typer.onAdvance = rebuildTyper;
 
 typer.onReset = () => {
     const childNodes = codeDiv.childNodes;

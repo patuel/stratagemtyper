@@ -1,7 +1,7 @@
 class Settings {
     codeStyle = "arrow"
     codeVisibility = "visible"
-    iconVisibility = "visible"
+    iconVisible = true
     restartOnFail = true
     // bool[], array of boolean with the length equal to the count of all stratagems
     //         the index equals the index of the stratagem array and the value indicates if it's active
@@ -27,9 +27,9 @@ class Settings {
                 this.codeVisibility = codeVisibility;
             }
 
-            let iconVisibility = window.localStorage.getItem("iconVisibility");
-            if (iconVisibility != undefined) {
-                this.iconVisibility = iconVisibility;
+            let iconVisible = window.localStorage.getItem("iconVisible");
+            if (iconVisible != undefined) {
+                this.iconVisible = (iconVisible == "1");
             }
 
             let restartOnFail = window.localStorage.getItem("restartOnFail");
@@ -75,7 +75,7 @@ function openSelectUI(ev) {
 
             pool.build();
             typer.advance();
-            
+
             configWindow.hide();
         }
     });
@@ -187,7 +187,50 @@ function openSelectUI(ev) {
 }
 
 function openConfigUI(ev) {
-    alert("N/A");
+    let configWindow = overlay();
+
+    let content = document.querySelector("#settings")
+                    .content
+                    .querySelector("div")
+                    .cloneNode(true);
+    configWindow.elem.appendChild(content);
+
+    // Get inputs
+    const codeStyleInput = content.querySelector('select[name="codestyle"]');
+    const codeVisibilityInput = content.querySelector('select[name="codevisibility"]');
+    const iconVisibilityInput = content.querySelector('input[name="iconvisibility"]');
+    const restartInput = content.querySelector('input[name="restart"]');
+
+    // Load from settings
+    codeStyleInput.value = settings.codeStyle;
+    codeVisibilityInput.value = settings.codeVisibility;
+    iconVisibilityInput.checked = settings.iconVisible;
+    restartInput.checked = settings.restartOnFail;
+
+    // Save / Cancel
+    const saveBtn = content.querySelector('button[name="save"]');
+    saveBtn.addEventListener("click", () => {
+        settings.codeStyle = codeStyleInput.value;
+        settings.codeVisibility = codeVisibilityInput.value;
+        settings.iconVisible = iconVisibilityInput.checked;
+        settings.restartOnFail = restartInput.checked;
+
+        if ("localStorage" in window) {
+            window.localStorage.setItem("codeStyle", codeStyleInput.value);
+            window.localStorage.setItem("codeVisibility", codeVisibilityInput.value);
+            window.localStorage.setItem("iconVisible", iconVisibilityInput.checked ? "1" : "0");
+            window.localStorage.setItem("restartOnFail", restartInput.checked ? "1" : "0");
+        }
+
+        rebuildTyper(pool.current());
+
+        configWindow.hide();
+    });
+
+    const cancelBtn = content.querySelector('button[name="cancel"]');
+    cancelBtn.addEventListener("click", configWindow.hide);
+
+    configWindow.show();
 }
 
 function buildMenu() {

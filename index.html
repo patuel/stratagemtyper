@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Stratagemtyper</title>
 
     <link rel="stylesheet" href="assets/css/stratagems.css" />
     <link rel="stylesheet" href="assets/css/code.css" />
@@ -133,8 +133,69 @@
             display: inline-block;
             margin-right: 1em;
         }
+
+        .settings h1 {
+            font-size: 1.5em;
+        }
+
+        .settings hr {
+            border: none;
+            border-bottom: 1px solid #646669;
+        }
+
+        .settings > div {
+            margin-bottom: 1em;
+        }
+
+        .settings > div > input {
+            float: left;
+        }
+
+        .settings > div > label {
+            font-weight: bold;
+        }
+
+        .settings > div > p {
+            margin: 1px;
+            clear: both;
+        }
     </style>
 </head>
 <body>
+    <template id="settings" >
+        <div class="settings">
+            <div>
+                <button name="save">Save</button>
+                <button name="cancel">Cancel</button>
+            </div>
+            <h1>Settings</h1>
+            <hr />
+            <div>
+                <label for="codestyle">Code style</label>
+                <select name="codestyle">
+                    <option value="arrow">Arrows</option>
+                    <option value="keys">WASD</option>
+                </select>
+            </div>
+            <div>
+                <label for="codevisibility">Show code</label>
+                <select name="codevisibility">
+                    <option value="visible">Visible</option>
+                    <option value="partial">Partial</option>
+                    <option value="hidden">Hidden</option>
+                </select>
+            </div>
+            <div>
+                <label for="iconvisibility">Show icon</label>
+                <input type="checkbox" name="iconvisibility" />
+                <p>Learn stratagems by name only.</p>
+            </div>
+            <div>
+                <label for="restart">Restart on fail</label>
+                <input type="checkbox" name="restart" />
+                <p>When pressing the wrong button you have to restart the stratagem code.</p>
+            </div>
+        </div>
+    </template>
 </body>
 </html>
