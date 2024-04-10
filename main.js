@@ -282,8 +282,8 @@ function openStatsUI() {
                 return statfield("Perfect", stat[STAT_SUCCESSINDEX]);
             },
             () => {
-                if ("sessionStorage" in window) {
-                    const imgData = window.sessionStorage.getItem(`img[${i}]`);
+                if ("localStorage" in window) {
+                    const imgData = window.localStorage.getItem(`img[${i}]`);
                     if (imgData == undefined) {
                         return undefined;
                     }
@@ -306,31 +306,31 @@ function openStatsUI() {
         container.className = "stat";
         statsWindow.elem.appendChild(container);
 
+        const header = document.createElement("div");
+        header.className = "header";
+        container.appendChild(header);
+
         const imageCol = document.createElement("div");
         imageCol.className = "icon";
-        container.appendChild(imageCol);
+        header.appendChild(imageCol);
 
         const icon = document.createElement("div");
         icon.classList.add("stratagem", stratagem.icon);
         imageCol.appendChild(icon);
 
+        const name = document.createElement("div");
+        name.className = "title";
+        name.innerHTML = stratagem.name;
+        header.appendChild(name);
+
         const statInfo = document.createElement("div");
         statInfo.className = "info";
         container.appendChild(statInfo);
 
-        const name = document.createElement("div");
-        name.className = "title";
-        name.innerHTML = stratagem.name;
-        statInfo.appendChild(name);
-
-        const detailsContainer = document.createElement("div");
-        detailsContainer.className="details";
-        statInfo.appendChild(detailsContainer);
-
         data.forEach((v) => {
             const elem = v();
             if (elem != undefined) {
-                detailsContainer.appendChild(elem);
+                statInfo.appendChild(elem);
             }
         })
     });
@@ -376,11 +376,29 @@ function onLoad(ev) {
 // UI
 
 function overlay() {
-    let elem = document.createElement("div");
+    const elem = document.createElement("div");
     elem.className = "overlay";
     elem.style.display = "none";
 
-    let inner = document.createElement("div");
+    const closeFn = ((elem) => {
+        return () => {
+            typer.active = true;
+            elem.style.display = "none";
+            document.body.removeChild(elem);
+        }
+    })(elem);
+
+    const closer = document.createElement("div");
+    closer.className = "closer";
+    elem.appendChild(closer);
+    closer.addEventListener("click", closeFn);
+
+    const x = document.createElement("span");
+    x.innerHTML = "+";
+    closer.appendChild(x);
+
+    const inner = document.createElement("div");
+    inner.className = "content";
     elem.appendChild(inner);
 
     document.body.appendChild(elem);
@@ -391,11 +409,7 @@ function overlay() {
             typer.active = false;
             elem.style.display = "";
         },
-        hide: () => {
-            typer.active = true;
-            elem.style.display = "none";
-            document.body.removeChild(elem);
-        }
+        hide: closeFn,
     }
 }
 

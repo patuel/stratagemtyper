@@ -80,10 +80,29 @@
             width: 100vw;
             height: 100vh;
             display: grid;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
         }
 
-        div.overlay > div {
-            margin: 2em;
+        div.overlay > div.closer {
+            display: inline-block;
+            position: relative;
+        }
+
+        div.overlay > div.closer > span {
+            display: inline-block;
+            transform: rotate(45deg);
+            font-size: 5em;
+        }
+
+        div.overlay > div.closer > span:hover {
+            color: #e2b714;
+            cursor: pointer;
+        }
+
+        div.overlay > div.content {
+            margin: 0 2em;
             padding: 1em;
             background: #2c2e31;
             border-radius: 1em;
@@ -91,31 +110,31 @@
             text-align: left;
         }
 
-        div.overlay > div > h2 {
+        div.overlay > div.content > h2 {
             font-size: .8em;
             margin-right: 1em;
         }
 
-        div.overlay > div > div > div.stratagem {
+        div.overlay > div.content > div > div.stratagem {
             display: inline-block;
             cursor: pointer;
             margin-right: 5px;
             border: 3px solid black;
         }
 
-        div.overlay > div > div > div.stratagem.active,
-        div.overlay > div > div > div.stratagem:hover {
+        div.overlay > div.content > div > div.stratagem.active,
+        div.overlay > div.content > div > div.stratagem:hover {
             border-color: #e2b714;
         }
 
-        div.overlay > div > div > div.stratagem.active {
+        div.overlay > div.content > div > div.stratagem.active {
             border-style: outset;
             /* box-shadow: 0 0 15px -2px #e2b714; */
         }
-        div.overlay > div > div > div.stratagem.active:hover {
+        div.overlay > div.content > div > div.stratagem.active:hover {
             border-style: outset;
         }
-        div.overlay > div > div > div.stratagem:not(.active):hover {
+        div.overlay > div.content > div > div.stratagem:not(.active):hover {
             border-style: inset;
         }
 
@@ -166,7 +185,7 @@
 
         .stat {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             width: 90%;
             padding: 1em;
             border: 1px solid #323437;
@@ -174,29 +193,26 @@
             border-radius: 5px;
         }
 
-        .stat > .icon {
+        .stat > .header {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 0.5em;
+        }
+
+        .stat > .header > .icon {
             margin-right: 1em;
         }
 
         .stat > .info {
             flex-grow: 2;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            justify-content: space-evenly;
             padding-left: 1em;
             border-left: 1px solid #323437;
         }
 
-        .stat > .info > .title {
-            margin-bottom: 0.5em;
-        }
-
-        .stat > .info > .details {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-
-        .stat > .info > .details > .data {
+        .stat > .info > .data {
             display: flex;
             flex-direction: column;
             padding: 0.5em;
@@ -205,18 +221,25 @@
             text-align: center;
         }
 
-        .stat > .info > .details > .data  > .img {
+        .stat > .info > .data  > .img {
             width: 40px;
             height: 40px;
             background-size: cover;
         }
 
-        .stat > .info > .details > .data > .title {
+        .stat > .header > .title {
             font-size: .7em;
             padding-bottom: 0.5em;
             margin-bottom: 0.5em;
             color: #646669;
             border-bottom: 1px solid #323437;
+
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 1.5em;
+            flex-grow: 2;
+            text-align: center;
         }
     </style>
 </head>

@@ -172,9 +172,9 @@ class Typer {
         const dataUrl = tmpCan.toDataURL();
         this.touchImg.src = dataUrl;
 
-        if ("sessionStorage" in window) {
+        if ("localStorage" in window) {
             const i = pool.currentIndex();
-            window.sessionStorage.setItem(`img[${i}]`, dataUrl);
+            window.localStorage.setItem(`img[${i}]`, dataUrl);
         }
     }
 
