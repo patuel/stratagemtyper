@@ -143,7 +143,6 @@ class Typer {
 
         // console.log(ev);
         if (this.touchStarted) {
-            ev.preventDefault();
             this.wantTouchReset = false;
         }
 
@@ -238,6 +237,14 @@ class Typer {
 
         ev.preventDefault();
 
+        if (!this.hasStarted) {
+            const now = Date.now();
+            this.waitTime = now - this.advanceTime;
+            this.startTime = now;
+
+            this.hasStarted = true;
+        }
+
         const touch = ev.touches[0];
 
         if (touch.pageX < this.touchBounds[0])
@@ -281,6 +288,19 @@ class Typer {
             this.activeCodeCharIndex++;
 
             if (this.activeCodeCharIndex == this.activeCode.length) {
+                const time = Date.now() - this.startTime;
+                console.log("Thinking time", this.waitTime, "ms");
+                console.log("Time for", this.pool.current().name, time, "ms");
+
+                const i = this.pool.currentIndex();
+                const stats = this.stats[i];
+                stats[STAT_TIMEINDEX].push(time);
+                if (this.hasError) {
+                    stats[STAT_FAILINDEX]++;
+                } else {
+                    stats[STAT_SUCCESSINDEX]++;
+                }
+
                 this.advance();
                 this.touchContext.stroke();
                 this.canvasToImage();
@@ -345,8 +365,6 @@ class Typer {
                 } else {
                     stats[STAT_SUCCESSINDEX]++;
                 }
-
-                console.log(this.stats.filter(v => v[0].length > 0 || v[1] > 0 || v[2] > 0));
 
                 this.advance();
             }
