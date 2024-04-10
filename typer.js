@@ -116,11 +116,12 @@ class Typer {
     }
 
     canvasToImage() {
+        const padding = 5;
         const bounds = this.touchBounds;
-        const sx = bounds[0];
-        const sy = bounds[1];
-        const sWidth = bounds[2] - bounds[0];
-        const sHeight = bounds[3] - bounds[1];
+        const sx = bounds[0] - padding;
+        const sy = bounds[1] - padding;
+        const sWidth = bounds[2] - bounds[0] + (padding * 2);
+        const sHeight = bounds[3] - bounds[1] + (padding * 2);
 
         const tmpCan = document.createElement("canvas");
         tmpCan.width = sWidth;
@@ -137,7 +138,7 @@ class Typer {
     }
 
     handleTouchStart(ev) {
-        // console.log(ev);
+    // console.log(ev);
         if (!this.touchInitialized) {
             const last = document.body.lastElementChild.getBoundingClientRect();
             this.touchMinY = last.bottom;
@@ -163,13 +164,16 @@ class Typer {
         const touch = ev.touches[0];
         // console.log(touch.pageY, this.touchMinY);
         if (touch.pageY >= this.touchMinY) {
-            this.drawStarted = false;
             this.touchBounds = [10000, 10000, 0, 0];
 
             this.lastX = touch.pageX;
             this.lastY = touch.pageY;
 
             this.touchStarted = true;
+            this.touchContext.clearRect(0, 0, this.touchCanvas.width, this.touchCanvas.height);
+
+            this.touchContext.beginPath();
+            this.touchContext.moveTo(touch.pageX, touch.pageY);
         }
     }
 
@@ -196,14 +200,7 @@ class Typer {
         if (touch.pageY > this.touchBounds[3])
             this.touchBounds[3] = touch.pageY;
 
-        if (!this.drawStarted) {
-            this.touchContext.clearRect(0, 0, this.touchCanvas.width, this.touchCanvas.height);
-            this.touchContext.beginPath();
-            this.touchContext.moveTo(touch.pageX, touch.pageY);
-            this.drawStarted = true;
-        } else {
-            this.touchContext.lineTo(touch.pageX, touch.pageY);
-        }
+        this.touchContext.lineTo(touch.pageX, touch.pageY);
 
         const diffX = touch.pageX - this.lastX;
         const diffY = touch.pageY - this.lastY;
@@ -222,10 +219,6 @@ class Typer {
                 code = "A";
             }
         }
-        if (code != undefined) {
-            this.lastX = touch.pageX;
-            this.lastY = touch.pageY;
-        }
 
         // console.log(code);
         if (code == undefined) {
@@ -233,6 +226,7 @@ class Typer {
         }
 
         if (code == this.activeCode[this.activeCodeCharIndex]) {
+            this.touchContext.strokeStyle = "green";
             this.onSuccess(this.activeCodeCharIndex);
 
             this.activeCodeCharIndex++;
@@ -245,9 +239,18 @@ class Typer {
 
             }
         } else {
+            this.touchContext.strokeStyle = "red";
             this.onFail(this.activeCodeCharIndex);
             this.hasError = true;
         }
+        this.touchContext.stroke();
+        this.touchContext.closePath();
+        
+        this.touchContext.beginPath();
+        this.touchContext.moveTo(touch.pageX, touch.pageY);
+
+        this.lastX = touch.pageX;
+        this.lastY = touch.pageY;
 
         return false;
     }

@@ -246,7 +246,7 @@ function buildMenu() {
     let configLink = document.createElement("a");
     configLink.href = "#";
     configLink.innerHTML = "Config";
-    configLink.addEventListener("click touchdown", openConfigUI);
+    configLink.addEventListener("click", openConfigUI);
     container.appendChild(configLink);
 
     document.body.appendChild(container);
