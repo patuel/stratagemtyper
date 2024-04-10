@@ -59,9 +59,9 @@ class Typer {
             this.handleKeyDown.bind(this));
         
         document.addEventListener("touchstart",
-            this.handleTouchStart.bind(this), { passive: false });
+            this.handleTouchStart.bind(this), { passive: true });
         document.addEventListener("touchend",
-            this.handleTouchEnd.bind(this), { passive: false });
+            this.handleTouchEnd.bind(this), { passive: true });
         document.addEventListener("touchmove",
             this.handleTouchMove.bind(this), { passive: false });
     }
@@ -94,20 +94,25 @@ class Typer {
 
     lastX = 0;
     lastY = 0;
+    touchMinY = 10000;
     touchBounds = [10000, 10000, 0, 0];
     wantTouchReset = false;
     touchInitialized = false;
     touchCanvas;
     touchCtx;
     drawStarted = false;
+    touchStarted = false;
 
     touchImg;
 
     handleTouchEnd(ev) {
-        ev.preventDefault();
-        this.wantTouchReset = false;
+        // console.log(ev);
+        if (this.touchStarted) {
+            ev.preventDefault();
+            this.wantTouchReset = false;
+        }
 
-        return false;
+        return !this.touchStarted;
     }
 
     canvasToImage() {
@@ -132,9 +137,11 @@ class Typer {
     }
 
     handleTouchStart(ev) {
-        ev.preventDefault();
-
+        // console.log(ev);
         if (!this.touchInitialized) {
+            const last = document.body.lastElementChild.getBoundingClientRect();
+            this.touchMinY = last.bottom;
+
             this.touchImg = document.createElement("img");
             document.body.appendChild(this.touchImg);
 
@@ -152,21 +159,31 @@ class Typer {
 
             this.touchInitialized = true;
         }
-        this.drawStarted = false;
-        this.touchBounds = [10000, 10000, 0, 0];
 
         const touch = ev.touches[0];
-        this.lastX = touch.pageX;
-        this.lastY = touch.pageY;
+        // console.log(touch.pageY, this.touchMinY);
+        if (touch.pageY >= this.touchMinY) {
+            this.drawStarted = false;
+            this.touchBounds = [10000, 10000, 0, 0];
 
-        return false;
+            this.lastX = touch.pageX;
+            this.lastY = touch.pageY;
+
+            this.touchStarted = true;
+        }
     }
 
     handleTouchMove(ev) {
-        ev.preventDefault();
+        if (!this.touchStarted) {
+            return false;
+        }
+        // console.log(ev);
+
         if (this.wantTouchReset) {
             return false;
         }
+
+        ev.preventDefault();
 
         const touch = ev.touches[0];
 
@@ -191,19 +208,17 @@ class Typer {
         const diffX = touch.pageX - this.lastX;
         const diffY = touch.pageY - this.lastY;
 
-        // console.log(ev, diffX, diffY);
-
         let code = undefined;
-        if (diffX > -touch.radiusX && diffX < touch.radiusX) {
-            if (diffY > touch.radiusY) {
+        if (diffX > -25 && diffX < 25) {
+            if (diffY > 25) {
                 code = "S";
-            } else if (diffY < -touch.radiusY) {
+            } else if (diffY < -25) {
                 code = "W";
             }
-        } else if (diffY > -touch.radiusY && diffY < touch.radiusY) {
-            if (diffX > touch.radiusX) {
+        } else if (diffY > -25 && diffY < 25) {
+            if (diffX > 25) {
                 code = "D";
-            } else if (diffX < -touch.radiusX) {
+            } else if (diffX < -25) {
                 code = "A";
             }
         }
