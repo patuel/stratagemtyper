@@ -59,11 +59,11 @@ class Typer {
             this.handleKeyDown.bind(this));
         
         document.addEventListener("touchstart",
-            this.handleTouchStart.bind(this));
+            this.handleTouchStart.bind(this), { passive: false });
         document.addEventListener("touchend",
-            this.handleTouchEnd.bind(this));
+            this.handleTouchEnd.bind(this), { passive: false });
         document.addEventListener("touchmove",
-            this.handleTouchMove.bind(this));
+            this.handleTouchMove.bind(this), { passive: false });
     }
 
     advance() {
@@ -94,48 +94,123 @@ class Typer {
 
     lastX = 0;
     lastY = 0;
+    touchBounds = [10000, 10000, 0, 0];
     wantTouchReset = false;
+    touchInitialized = false;
+    touchCanvas;
+    touchCtx;
+    drawStarted = false;
+
+    touchImg;
 
     handleTouchEnd(ev) {
+        ev.preventDefault();
         this.wantTouchReset = false;
+
         return false;
     }
 
+    canvasToImage() {
+        const bounds = this.touchBounds;
+        const sx = bounds[0];
+        const sy = bounds[1];
+        const sWidth = bounds[2] - bounds[0];
+        const sHeight = bounds[3] - bounds[1];
+
+        const tmpCan = document.createElement("canvas");
+        tmpCan.width = sWidth;
+        tmpCan.height = sHeight;
+        const ctx = tmpCan.getContext("2d");
+
+
+        ctx.drawImage(
+            this.touchCanvas,
+            sx, sy, sWidth, sHeight,
+            0, 0, sWidth, sHeight
+            );
+        this.touchImg.src = tmpCan.toDataURL();
+    }
+
     handleTouchStart(ev) {
+        ev.preventDefault();
+
+        if (!this.touchInitialized) {
+            this.touchImg = document.createElement("img");
+            document.body.appendChild(this.touchImg);
+
+            this.touchCanvas = document.createElement("canvas");
+            this.touchCanvas.width = window.innerWidth;
+            this.touchCanvas.height = window.innerHeight;
+            this.touchCanvas.style.position = "absolute";
+            this.touchCanvas.style.display = "none";
+            this.touchCanvas.style.top = "0px";
+            this.touchCanvas.style.left = "0px";
+            document.body.appendChild(this.touchCanvas);
+
+            this.touchContext = this.touchCanvas.getContext("2d");
+            this.touchContext.strokeStyle = "rgba(200, 0, 0, 1)";
+
+            this.touchInitialized = true;
+        }
+        this.drawStarted = false;
+        this.touchBounds = [10000, 10000, 0, 0];
+
         const touch = ev.touches[0];
         this.lastX = touch.pageX;
         this.lastY = touch.pageY;
+
         return false;
     }
 
     handleTouchMove(ev) {
+        ev.preventDefault();
         if (this.wantTouchReset) {
             return false;
         }
 
         const touch = ev.touches[0];
 
+        if (touch.pageX < this.touchBounds[0])
+            this.touchBounds[0] = touch.pageX;
+        if (touch.pageX > this.touchBounds[2])
+            this.touchBounds[2] = touch.pageX;
+        if (touch.pageY < this.touchBounds[1])
+            this.touchBounds[1] = touch.pageY;
+        if (touch.pageY > this.touchBounds[3])
+            this.touchBounds[3] = touch.pageY;
+
+        if (!this.drawStarted) {
+            this.touchContext.clearRect(0, 0, this.touchCanvas.width, this.touchCanvas.height);
+            this.touchContext.beginPath();
+            this.touchContext.moveTo(touch.pageX, touch.pageY);
+            this.drawStarted = true;
+        } else {
+            this.touchContext.lineTo(touch.pageX, touch.pageY);
+        }
+
         const diffX = touch.pageX - this.lastX;
         const diffY = touch.pageY - this.lastY;
 
-        // console.log(diffX, diffY);
+        // console.log(ev, diffX, diffY);
 
         let code = undefined;
-        if (diffX == 0) {
-            if (diffY > 0) {
+        if (diffX > -touch.radiusX && diffX < touch.radiusX) {
+            if (diffY > touch.radiusY) {
                 code = "S";
-            } else if (diffY < 0) {
+            } else if (diffY < -touch.radiusY) {
                 code = "W";
             }
-        } else if (diffY == 0) {
-            if (diffX > 0) {
+        } else if (diffY > -touch.radiusY && diffY < touch.radiusY) {
+            if (diffX > touch.radiusX) {
                 code = "D";
-            } else if (diffX < 0) {
+            } else if (diffX < -touch.radiusX) {
                 code = "A";
             }
         }
-        this.lastX = touch.pageX;
-        this.lastY = touch.pageY;
+        if (code != undefined) {
+            this.lastX = touch.pageX;
+            this.lastY = touch.pageY;
+        }
 
         // console.log(code);
         if (code == undefined) {
@@ -149,7 +224,10 @@ class Typer {
 
             if (this.activeCodeCharIndex == this.activeCode.length) {
                 this.advance();
+                this.touchContext.stroke();
+                this.canvasToImage();
                 this.wantTouchReset = true;
+
             }
         } else {
             this.onFail(this.activeCodeCharIndex);
