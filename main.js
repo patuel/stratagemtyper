@@ -233,6 +233,111 @@ function openConfigUI(ev) {
     configWindow.show();
 }
 
+function statfield(name, value) {
+    const dataContainer = document.createElement("div");
+    dataContainer.className = "data";
+
+    const dataName = document.createElement("div");
+    dataName.className = "title";
+    dataName.innerHTML = name;
+    dataContainer.appendChild(dataName);
+
+    const dataValue = document.createElement("div");
+    dataValue.innerHTML = value;
+    dataContainer.appendChild(dataValue);
+
+    return dataContainer;
+}
+
+function openStatsUI() {
+    let statsWindow = overlay();
+
+    const content = document.createElement("div");
+    content.className = "stats";
+    statsWindow.elem.appendChild(content);
+
+    const title = document.createElement("h1");
+    title.innerHTML = "Statistics";
+    content.appendChild(title);
+
+    const stats = typer.stats;
+
+    stats.forEach((stat, i) => {
+        const stratagem = DB.stratagems[i];
+
+        const data = [
+            () => {
+                let avgTime = Math.round(stat[STAT_TIMEINDEX].reduce((p, c) => p + c, 0) / stat[STAT_TIMEINDEX].length);
+                if (!avgTime) {
+                    avgTime = "N/A";
+                } else {
+                    avgTime += "ms";
+                }
+                return statfield("Avg. time", `${avgTime}`)
+            },
+            () => {
+                return statfield("Tries", stat[STAT_SUCCESSINDEX] + stat[STAT_FAILINDEX]);
+            },
+            () => {
+                return statfield("Perfect", stat[STAT_SUCCESSINDEX]);
+            },
+            () => {
+                if ("sessionStorage" in window) {
+                    const imgData = window.sessionStorage.getItem(`img[${i}]`);
+                    if (imgData == undefined) {
+                        return undefined;
+                    }
+
+                    const dataContainer = document.createElement("div");
+                    dataContainer.className = "data";
+                    
+                    const img = document.createElement("div");
+                    img.className = "img";
+                    img.style.backgroundImage = `url("${imgData}")`;
+                    dataContainer.appendChild(img);
+
+                    return dataContainer;
+                }
+                return undefined;
+            }
+        ];
+
+        const container = document.createElement("div");
+        container.className = "stat";
+        statsWindow.elem.appendChild(container);
+
+        const imageCol = document.createElement("div");
+        imageCol.className = "icon";
+        container.appendChild(imageCol);
+
+        const icon = document.createElement("div");
+        icon.classList.add("stratagem", stratagem.icon);
+        imageCol.appendChild(icon);
+
+        const statInfo = document.createElement("div");
+        statInfo.className = "info";
+        container.appendChild(statInfo);
+
+        const name = document.createElement("div");
+        name.className = "title";
+        name.innerHTML = stratagem.name;
+        statInfo.appendChild(name);
+
+        const detailsContainer = document.createElement("div");
+        detailsContainer.className="details";
+        statInfo.appendChild(detailsContainer);
+
+        data.forEach((v) => {
+            const elem = v();
+            if (elem != undefined) {
+                detailsContainer.appendChild(elem);
+            }
+        })
+    });
+    
+    statsWindow.show();
+}
+
 function buildMenu() {
     let container = document.createElement("div");
     container.className = "menu";
@@ -248,6 +353,12 @@ function buildMenu() {
     configLink.innerHTML = "Config";
     configLink.addEventListener("click", openConfigUI);
     container.appendChild(configLink);
+
+    let statsLink = document.createElement("a");
+    statsLink.href = "#";
+    statsLink.innerHTML = "Stats";
+    statsLink.addEventListener("click", openStatsUI);
+    container.appendChild(statsLink);
 
     document.body.appendChild(container);
 }
@@ -277,9 +388,11 @@ function overlay() {
     return {
         elem: inner,
         show: () => {
+            typer.active = false;
             elem.style.display = "";
         },
         hide: () => {
+            typer.active = true;
             elem.style.display = "none";
             document.body.removeChild(elem);
         }

@@ -17,6 +17,10 @@ class StratagemPool {
         return this.pool.length;
     }
 
+    currentIndex() {
+        return this.currentStratagemIndex
+    }
+
     current() {
         return DB.stratagems[this.currentStratagemIndex];
     }
@@ -36,16 +40,21 @@ class StratagemPool {
     }
 }
 
+const STAT_TIMEINDEX = 0;
+const STAT_SUCCESSINDEX = 1;
+const STAT_FAILINDEX = 2;
+
 class Typer {
+    active = true;
+
     pool;
 
-    activeStratagem;
     activeCode = "";
     activeCodeCharIndex = 0;
     hasStarted = false;
     resetProgress = false;
     
-    stats = {};
+    stats;
     hasStarted = false;
     hasError = false;
     advanceTime;
@@ -54,6 +63,29 @@ class Typer {
 
     constructor(pool) {
         this.pool = pool;
+
+        let stats = undefined;
+        if ("localStorage" in window) {
+            const tmp = window.localStorage.getItem("stats");
+            if (tmp != undefined) {
+                stats = JSON.parse(tmp);
+            }
+        }
+        if (stats == undefined) {
+            stats = new Array(DB.stratagems.length).fill(null).map(_ => [
+                [], // time
+                0,  // succeeds
+                0,  // fails
+            ]);
+        }
+        this.stats = stats;
+
+        setInterval(() => {
+            if ("localStorage" in window) {
+                console.log("Saving stats");
+                window.localStorage.setItem("stats", JSON.stringify(this.stats))
+            }
+        }, 5000)
 
         document.addEventListener("keydown",
             this.handleKeyDown.bind(this));
@@ -69,7 +101,6 @@ class Typer {
     advance() {
         let stratagem = this.pool.advance();
 
-        this.activeStratagem = stratagem;
         this.activeCode = stratagem.code;
         this.activeCodeCharIndex = 0;
 
@@ -106,6 +137,10 @@ class Typer {
     touchImg;
 
     handleTouchEnd(ev) {
+        if (!this.active) {
+            return;
+        }
+
         // console.log(ev);
         if (this.touchStarted) {
             ev.preventDefault();
@@ -134,10 +169,20 @@ class Typer {
             sx, sy, sWidth, sHeight,
             0, 0, sWidth, sHeight
             );
-        this.touchImg.src = tmpCan.toDataURL();
+        const dataUrl = tmpCan.toDataURL();
+        this.touchImg.src = dataUrl;
+
+        if ("sessionStorage" in window) {
+            const i = pool.currentIndex();
+            window.sessionStorage.setItem(`img[${i}]`, dataUrl);
+        }
     }
 
     handleTouchStart(ev) {
+        if (!this.active) {
+            return;
+        }
+        
     // console.log(ev);
         if (!this.touchInitialized) {
             const last = document.body.lastElementChild.getBoundingClientRect();
@@ -178,6 +223,10 @@ class Typer {
     }
 
     handleTouchMove(ev) {
+        if (!this.active) {
+            return;
+        }
+        
         if (!this.touchStarted) {
             return false;
         }
@@ -256,6 +305,10 @@ class Typer {
     }
 
     handleKeyDown(ev) {
+        if (!this.active) {
+            return;
+        }
+        
         let code = ev.key.toUpperCase();
         if (!"WASD".includes(code)) {
             return false;
@@ -269,8 +322,7 @@ class Typer {
         if (!this.hasStarted) {
             const now = Date.now();
             this.waitTime = now - this.advanceTime;
-            this.startTime = now;    
-            console.log("Thinking time", this.waitTime, "ms");
+            this.startTime = now;
 
             this.hasStarted = true;
         }
@@ -282,7 +334,20 @@ class Typer {
 
             if (this.activeCodeCharIndex == this.activeCode.length) {
                 const time = Date.now() - this.startTime;
-                console.log("Time for", this.activeStratagem.name, time, "ms");
+                console.log("Thinking time", this.waitTime, "ms");
+                console.log("Time for", this.pool.current().name, time, "ms");
+
+                const i = this.pool.currentIndex();
+                const stats = this.stats[i];
+                stats[STAT_TIMEINDEX].push(time);
+                if (this.hasError) {
+                    stats[STAT_FAILINDEX]++;
+                } else {
+                    stats[STAT_SUCCESSINDEX]++;
+                }
+
+                console.log(this.stats.filter(v => v[0].length > 0 || v[1] > 0 || v[2] > 0));
+
                 this.advance();
             }
         } else {
