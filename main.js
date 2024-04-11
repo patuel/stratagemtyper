@@ -413,4 +413,13 @@ function overlay() {
     }
 }
 
+if ("serviceWorker" in navigator) {
+    try {
+    navigator.serviceWorker.register("./serviceworker.js");
+        console.log("Serviceworker registered.");
+    } catch (err) {
+        console.log("Error during service worker registration:", err);
+    }
+}  
+
 onLoad();
